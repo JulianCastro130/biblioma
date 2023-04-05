@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Electron & MySQL</title>
+    <link rel="stylesheet" href="bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #products {
+        height: 100vh;
+        overflow-y: auto;
+        padding: 2px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="container-fluid">
+      <div class="row">
+        <div class="col d-flex align-items-center flex-column">
+          <div class=" my-auto">
+            <button class="btn btn-primary p-3" id="productsButton">
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-collection" viewBox="0 0 16 16">
+                <path d="M2.5 3.5a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-11zm2-2a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6v7zm1.5.5A.5.5 0 0 1 1 13V6a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-13z"/>
+              </svg>
+            </button>
+          </div>
+          <span>
+            Mis Libros
+          </span>
+        </div>
+        <div class="col-md-6 p-4 my-auto">
+          <div id="filterProduct">
+            <form id="filterForm" class="d-flex flex-row">
+              <div class="form-group" style="width: 80%;">
+                <input
+                  type="text"
+                  id="filter"
+                  placeholder="Buscar Libro"
+                  class="form-control"
+                  autofocus
+                />
+              </div>
+              <button type="submit" class="btn btn-primary ml-3 p-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  height="25"
+                  fill="currentColor"
+                  class="bi bi-search"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"
+                  />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+        <div class="col d-flex align-items-center flex-column">
+          <div class=" my-auto">
+            <button class="btn btn-primary p-3" id="modalButton">
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-journal-plus" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 5.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V10a.5.5 0 0 1-1 0V8.5H6a.5.5 0 0 1 0-1h1.5V6a.5.5 0 0 1 .5-.5z"/>
+                <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+              </svg>
+            </button>
+          </div>
+          <span>
+            Agregar Libro
+          </span>
+        </div>
+      </div>
+      <div class="row" id="modal">
+        <div class="d-flex flex-column align-items-center justify-content-center p-4 my-auto">
+          <!-- Product Form -->
+          <h1>Agrega un libro a tu base de datos!</h1>
+          <form id="productForm" class="card card-body animated fadeIn">
+            <div class="form-group">
+              <input
+                type="text"
+                id="title"
+                placeholder="Título del libro"
+                class="form-control"
+                autofocus
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="number"
+                id="year"
+                placeholder="Año de publicación"
+                step="any"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="author"
+                placeholder="Autor"
+                step="any"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="publisher"
+                placeholder="Editorial"
+                step="any"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="img"
+                placeholder="URL de la imágen"
+                step="any"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                id="isbn"
+                placeholder="ISBN"
+                step="any"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="number"
+                id="rating"
+                placeholder="Valoración"
+                step="any"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group">
+              <textarea
+                id="description"
+                rows="3"
+                placeholder="Sinopsis"
+                class="form-control"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+        </div>
+      </div>
+      <div id="productsRow">
+        <!-- Product List -->
+        <!-- <div class="col-md-6"> -->
+          <div id="products" class="row d-flex flex-row justify-content-around"></div>
+        <!-- </div> -->
+      </div>
+    </main>
+    <script src="./app.js"></script>
+  </body>
+</html>
