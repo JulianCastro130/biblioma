@@ -80,6 +80,24 @@ async function deleteProduct(productId) {
   location.reload();
 }
 
+async function getProductById(id) {
+  try {
+    const res = await pool.query('SELECT * FROM product WHERE id = $1', [id]);
+    return res.rows[0];
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+if (ipcMain) {
+ipcMain.handle('getProductById', async (event, id) => {
+  const product = await getProductById(id);
+  return product;
+});
+} else {
+  console.error('ipcMain is not defined');
+}
+
 if (ipcMain) {
 ipcMain.handle('deleteProduct', async (event, productId) => {
   await deleteProduct(productId);
@@ -89,11 +107,12 @@ ipcMain.handle('deleteProduct', async (event, productId) => {
 }
 
 async function updateProduct(product) {
+
   try {
     product.year = parseFloat(product.year);
     const query = {
-      text: 'UPDATE product SET title=$1, description=$2, year=$3, author=$4, img=$5, rating=$6, publisher=$7, isbn WHERE id=$8',
-      values: [product.title, product.description, product.year, product.author, product.img, product.rating, product.publisher, product.isbn , product.id],
+      text: 'UPDATE product SET title=$1, description=$2, year=$3, author=$4, img=$5, rating=$6, publisher=$7, isbn=$8 WHERE id=$9',
+      values: [product.title, product.description, product.year, product.author, product.img, product.rating, product.publisher, product.isbn, product.id],
     };
     await pool.query(query);
     location.reload();
@@ -140,5 +159,6 @@ module.exports = {
   getProducts,
   deleteProduct,
   updateProduct,
-  searchProduct
+  searchProduct,
+  getProductById
 };
